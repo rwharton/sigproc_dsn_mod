@@ -1,12 +1,3 @@
-/*
-
-  FILEDIT - Edit the header of a filterbank file in place.
-
-  Edited version (May 2017) Aaron B. Pearlman (aaron.b.pearlman@caltech.edu)
-      - Updated the help documentation to show the options for replacing the tsamp field.
-
-*/
-
 #if HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -20,7 +11,7 @@
 #include "header.h"
 
 int read_header(FILE *inputfile);
-void fix_header(FILE* file, char* newname, double newra, double newdec, int newibeam, int newnbeams, double newtstart,int newnchan, int newnbits, float newfch1, float newfoff,float newtsamp, int newdatatype);
+void fix_header(FILE* file, char* newname, double newra, double newdec, int newibeam, int newnbeams, double newtstart,int newnchan, int newnbits, float newfch1, float newfoff,float newtsamp);
 void zap_em(FILE* file, int* tzaps[2], int ntzaps, int fzaps[1024], int nfzaps,float mean, float sigma,char zap_mode);
 float get_random_value(float mean, float sigma);
 
@@ -31,14 +22,7 @@ float get_random_value(float mean, float sigma);
 
 
 void print_usage(){
-        printf("FILEDIT - Edit the header of a filterbank file in place.\n\n");
-        
-        printf("Edited (May 2017) by Aaron B. Pearlman (aaron.b.pearlman@caltech.edu).\n");
-        printf("    - Updated the help documentation to show the options for replacing the tsamp field.\n");
-        printf("Edited (May 2020) by Aaron B. Pearlman (aaron.b.pearlman@caltech.edu).\n");
-        printf("    - Added ability to update the data_type field (used for SR Terzan 5 data).\n\n");
-        
-        printf("Modify a .fil file\n");
+	printf("Modify a .fil file\n");
 	printf("==================\n");
 	printf("\n");
 	printf("Modifies a .fil file 'in place'\n");
@@ -47,14 +31,12 @@ void print_usage(){
 	printf("--dec,-d {dec}        : modify the dec to {dec}. in form ddmmss.xxx \n");
 	printf("--src-name,-n         : modify the source name.\n");
 	printf("--tstart,-T           : modify the start mjd.\n");
-        printf("--tsamp,-p {f} (in s) : modify the sample time (input [s]; output [us]).\n");
 	printf("--beam,-b {i}         : modify the beam number to {i}\n");
 	printf("--nbeams,-B {i}       : modify number of beams to {i}\n");
-        printf("--datatype,-D {i}    : modify data_type to {i}\n");
 	printf("--nchan,-c {i}        : modify number of channels to {i}\n");
-	printf("--fch1,-f {f}         : modify fch1 {f}\n");
+	printf("--fch2,-f {f}         : modify fch1 {f}\n");
 	printf("--foff,-F {f}         : modify foff {f}\n");
-	printf("--nbits,-i {b}        : modify nbits {b}\n");
+	printf("--nbits,-i {b}           : modify nbits {b}\n");
 	printf("\nOther options:\n");
 	printf("--time-zap,-t \"s e\" : 'zap' samples between 's' and 'e'\n");
 	printf("--replace-gaussian,-G : Replace zapped Gaussian random number generator\n");
@@ -66,7 +48,7 @@ void print_usage(){
 int main (int argc, char** argv){
 
 	struct option long_opt[256];
-	const char* args = "d:hn:t:T:r:m:s:k:B:D:b:ZSGf:F:c:i:p:";
+	const char* args = "d:hn:t:T:r:m:s:k:B:b:ZSGf:F:c:i:p:";
 	int opt_flag = 0;
 	int long_opt_idx = 0;
 	int* timezaps[2];
@@ -90,7 +72,6 @@ int main (int argc, char** argv){
 	float newfoff= 0;
 	int newnbits  = 0;
 	int newnchan = 0;
-        int newdatatype = 0;
 
 	newname[0]='\0';
 	ntimezaps=0;
@@ -143,11 +124,6 @@ int main (int argc, char** argv){
 	long_opt[long_opt_idx].has_arg = required_argument;
 	long_opt[long_opt_idx].flag = NULL;
 	long_opt[long_opt_idx++].val = 'b';
-        
-        long_opt[long_opt_idx].name = "data_type";
-        long_opt[long_opt_idx].has_arg = required_argument;
-        long_opt[long_opt_idx].flag = NULL;
-        long_opt[long_opt_idx++].val = 'D';
 
 	long_opt[long_opt_idx].name = "nbeams";
 	long_opt[long_opt_idx].has_arg = required_argument;
@@ -253,9 +229,6 @@ int main (int argc, char** argv){
 					case 'B':
 						newnbeams=atof(optarg);
 						break;
-                                        case 'D':
-                                                newdatatype=atof(optarg);
-                                                break;
 					case 'k':
 						sscanf(optarg, "%s",killfile);
 						killswitch = 1;
@@ -352,7 +325,7 @@ int main (int argc, char** argv){
 		exit(-5);
 	}
 
-	if ( newname[0]!='\0' || newra < 900000000 || newdec < 900000000 || newibeam >= 0 || newnbeams >= 0 || newtstart < 900000000 || newtsamp > 0 || newnbits || newnchan || newfch1 != 0 || newfoff != 0 || newdatatype != 0)fix_header(file,newname,newra,newdec,newibeam,newnbeams,newtstart,newnchan,newnbits,newfch1,newfoff,newtsamp,newdatatype);
+	if ( newname[0]!='\0' || newra < 900000000 || newdec < 900000000 || newibeam >= 0 || newnbeams >= 0 || newtstart < 900000000 || newtsamp > 0 || newnbits || newnchan || newfch1 != 0 || newfoff != 0)fix_header(file,newname,newra,newdec,newibeam,newnbeams,newtstart,newnchan,newnbits,newfch1,newfoff,newtsamp);
 
 	if(ntimezaps > 0 || nfreqzaps > 0)zap_em(file,timezaps,ntimezaps,fzaps,nfreqzaps,mean,sigma,zap_mode);
 
@@ -360,7 +333,7 @@ int main (int argc, char** argv){
 }
 
 
-void fix_header(FILE* file, char* newname, double newra, double newdec, int newibeam, int newnbeams, double newtstart,int newnchan, int newnbits, float newfch1, float newfoff, float newtsamp, int newdatatype){
+void fix_header(FILE* file, char* newname, double newra, double newdec, int newibeam, int newnbeams, double newtstart,int newnchan, int newnbits, float newfch1, float newfoff, float newtsamp){
 	int newlen;
 	int hdr_len;
 	char* hdr_arr;
@@ -509,16 +482,7 @@ void fix_header(FILE* file, char* newname, double newra, double newdec, int newi
 			printf("new foff= '%f'\n",newfoff);
 			*((double*)(ptr)) = (double)newfoff;
 		}
-                
-                memcpy(buf,ptr,9);
-                buf[9]='\0';
-                if(newdatatype != 0 && strcmp(buf,"data_type")==0){
-                        ptr+=9;
-                        an_int = *((int*)(ptr));
-                        printf("old data_type= '%i'\n",an_int);
-                        printf("new data_type= '%i'\n",newdatatype);
-                        *((int*)(ptr)) = (int)newdatatype;
-                }
+
 
 
 

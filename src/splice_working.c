@@ -75,12 +75,10 @@ main (int argc, char **argv)
   send_int("machine_id",machine_id);
   send_int("telescope_id",telescope_id);
   send_int("data_type",1);
-   
+  
   send_double("fch1",frch1[0]);
   send_double("foff",froff[0]);
   send_int("nchans",schans);
-  send_int("barycentric", 1);
-  
   frmhz = (double *) malloc(sizeof(double)*schans);
   k=0;
   for (i=0; i<nfiles; i++) {
@@ -103,16 +101,14 @@ main (int argc, char **argv)
   send_int("nifs",nifs);
   send_string("HEADER_END");
   
-  // Changed from nbytes = nchans*nbits/8 to nbytes = nchans*nbits/32 to get the number of samples right. - WRONG, leave as /8.
-  nbytes = nchans*nbits/8;
+  // Changed from nbytes = nchans*nbits/8 to nbytes = nchans*nbits/32 to get the number of samples right.
+  nbytes = nchans*nbits/32;
   block = (char *) malloc(nbytes);
-  
   while (1) {
     for (i=0; i<nfiles; i++) {
       if (feof(input[i])) exit(0);
-      
-      int readFlag = fread(block,nbytes,1,input[i]);
-      if (readFlag == 1) fwrite(block,nbytes,1,output);
+      fread(block,nbytes,1,input[i]);
+      fwrite(block,nbytes,1,output);
     }
   }
 }

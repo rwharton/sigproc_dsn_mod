@@ -79,7 +79,7 @@ main (int argc, char **argv)
   send_double("fch1",frch1[0]);
   send_double("foff",froff[0]);
   send_int("nchans",schans);
-  send_int("barycentric", 1);
+  send_int("pulsarcentric", 1);
   
   frmhz = (double *) malloc(sizeof(double)*schans);
   k=0;
