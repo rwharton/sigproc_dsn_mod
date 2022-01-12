@@ -25,6 +25,9 @@ char tempo_site(int telescope_id) /*includefile*/
   case 6:
     return('1'); /*GBT*/
     break;
+  case 7:
+    return('r'); /*GMRT*/
+    break;
   case 8:
     return('g'); /*Effelsberg*/
     break;
@@ -34,11 +37,29 @@ char tempo_site(int telescope_id) /*includefile*/
   case 10:
     return('z'); /*SRT*/
     break;
-  case 64:
-    return('m'); /*MeerKAT*/
+  case 11:
+    return('t'); /*LOFAR*/
     break;
-  case 65:
-    return('k'); /*KAT-7*/
+  case 12:
+    return('n'); /*CANBERRA*/
+    break;
+  case 13:
+    return('k'); /*GOLDSTONE*/
+    break;
+  case 14:
+    return('j'); /*ROBLEDO*/
+    break;
+  case 15:
+    return('6'); /*VLA*/
+    break;
+  case 20:
+    return('y'); /*CHIME*/
+    break;
+  case 21:
+    return('0'); /*FAST*/
+    break;
+  case 64:
+    return('q'); /*MeerKAT*/
     break;
   default:
     return('?'); /*unknown*/
@@ -84,11 +105,29 @@ char *telescope_name (int telescope_id) /*includefile*/
   case 10: 
     strcpy(string,"SRT");
     break;
+  case 11: 
+    strcpy(string,"LOFAR");
+    break;
+  case 12: 
+    strcpy(string,"CANBERRA");
+    break;
+  case 13: 
+    strcpy(string,"GOLDSTONE");
+    break;
+  case 14: 
+    strcpy(string,"ROBLEDO");
+    break;
+  case 15: 
+    strcpy(string,"VLA");
+    break;
+  case 20: 
+    strcpy(string,"CHIME");
+    break;
+  case 21: 
+    strcpy(string,"FAST");
+    break;
   case 64:
     strcpy(string,"MeerKAT");
-    break;
-  case 65:
-    strcpy(string,"KAT-7");
     break;
   case 82:
     strcpy(string,"eMerlin");
